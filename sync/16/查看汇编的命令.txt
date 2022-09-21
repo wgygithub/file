@@ -1,0 +1,5 @@
+-server
+-Xcomp
+-XX:+UnlockDiagnosticVMOptions
+-XX:+PrintAssembly
+-XX:CompileCommand=compileonly,*Test6.xx()
