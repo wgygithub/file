@@ -51,6 +51,14 @@ public class JsonTest {
         String s = desensitizedJsonString(json, keys);
 
         System.out.printf(s);
+        System.out.printf("---------");
+
+        List<Person> listPerson = new ArrayList<>();
+        listPerson.add(person);
+        json = OM.writeValueAsString(listPerson);
+        s = desensitizedJsonString(json, keys);
+        System.out.printf(s);
+
 
     }
 
@@ -88,17 +96,23 @@ public class JsonTest {
      * @param keys     keys
      */
     private static void desensitizedKeysValue(JsonNode jsonNode, Set<String> keys) {
-        Iterator<String> stringIterator = jsonNode.fieldNames();
-        while (stringIterator.hasNext()) {
-            String fieldName = stringIterator.next();
-            JsonNode item = jsonNode.get(fieldName);
-            if (item.isObject()) {
-                desensitizedKeysValue(item, keys);
-            } else if (item.isArray()) {
-                desensitizedKeysValueArray((ObjectNode) jsonNode, item, fieldName, keys);
-            } else {
-                if (keys.contains(fieldName)) {
-                    desensitizedValueNode((ObjectNode) jsonNode, fieldName, item);
+        //此处判断是不是数组
+        boolean array = jsonNode.isArray();
+        if (array) {
+            desensitizedKeysValueArray(null, jsonNode, null, keys);
+        } else {
+            Iterator<String> stringIterator = jsonNode.fieldNames();
+            while (stringIterator.hasNext()) {
+                String fieldName = stringIterator.next();
+                JsonNode item = jsonNode.get(fieldName);
+                if (item.isObject()) {
+                    desensitizedKeysValue(item, keys);
+                } else if (item.isArray()) {
+                    desensitizedKeysValueArray((ObjectNode) jsonNode, item, fieldName, keys);
+                } else {
+                    if (keys.contains(fieldName)) {
+                        desensitizedValueNode((ObjectNode) jsonNode, fieldName, item);
+                    }
                 }
             }
         }
